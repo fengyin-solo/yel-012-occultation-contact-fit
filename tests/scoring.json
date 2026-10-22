@@ -1,0 +1,128 @@
+{
+  "gate_tests": [
+    "test_outputs.py::test_success_is_quiet",
+    "test_outputs.py::test_body_radius_is_inverted_from_inner_and_outer_contacts",
+    "test_outputs.py::test_unordered_contacts_recover_unique_common_radius",
+    "test_outputs.py::test_noise_candidates_are_excluded_by_common_radius",
+    "test_outputs.py::test_impact_parameter_matches_each_station",
+    "test_outputs.py::test_center_time_uses_outer_contacts"
+  ],
+  "schema_version": 1,
+  "tests": {
+    "test_outputs.py::test_absent_parent_is_io_failure": {
+      "priority": "recovery",
+      "rationale": "absent parent is io failure；这验证失败、重跑或恢复不变量，失败会造成旧数据和台账不一致。",
+      "weight": 0.032
+    },
+    "test_outputs.py::test_bad_geometry_preserves_existing_result": {
+      "priority": "recovery",
+      "rationale": "bad geometry preserves existing result；这验证失败、重跑或恢复不变量，失败会造成旧数据和台账不一致。",
+      "weight": 0.032
+    },
+    "test_outputs.py::test_boolean_time_is_refused": {
+      "priority": "boundary",
+      "rationale": "boolean time is refused；这验证公开边界和拒收口径，失败会产生越界输入或错误放行。",
+      "weight": 0.024
+    },
+    "test_outputs.py::test_contact_count_has_a_lower_bound": {
+      "priority": "supporting",
+      "rationale": "contact count has a lower bound；这补充验证外围业务约束，失败会降低交付完整性和可运维性。",
+      "weight": 0.013
+    },
+    "test_outputs.py::test_contact_keys_are_exact": {
+      "priority": "schema",
+      "rationale": "contact keys are exact；这验证结构、类型或序列化外观，失败会使下游无法稳定消费结果。",
+      "weight": 0.018
+    },
+    "test_outputs.py::test_contact_times_require_six_values_and_three_distinct[times0]": {
+      "priority": "supporting",
+      "rationale": "contact times require four values and at least three distinct numbers；这补充验证外围业务约束，失败会降低交付完整性和可运维性。",
+      "weight": 0.013
+    },
+    "test_outputs.py::test_contact_times_require_six_values_and_three_distinct[times1]": {
+      "priority": "supporting",
+      "rationale": "contact times require four values and at least three distinct numbers；这补充验证外围业务约束，失败会降低交付完整性和可运维性。",
+      "weight": 0.013
+    },
+    "test_outputs.py::test_duplicate_json_key_is_bad_input": {
+      "priority": "boundary",
+      "rationale": "duplicate json key is bad input；这验证公开边界和拒收口径，失败会产生越界输入或错误放行。",
+      "weight": 0.024
+    },
+    "test_outputs.py::test_duplicate_site_is_refused": {
+      "priority": "boundary",
+      "rationale": "duplicate site is refused；这验证公开边界和拒收口径，失败会产生越界输入或错误放行。",
+      "weight": 0.024
+    },
+    "test_outputs.py::test_event_identifier_is_strict[ leading]": {
+      "priority": "supporting",
+      "rationale": "event identifier is strict；这补充验证外围业务约束，失败会降低交付完整性和可运维性。",
+      "weight": 0.013
+    },
+    "test_outputs.py::test_event_identifier_is_strict[AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA]": {
+      "priority": "supporting",
+      "rationale": "event identifier is strict；这补充验证外围业务约束，失败会降低交付完整性和可运维性。",
+      "weight": 0.013
+    },
+    "test_outputs.py::test_event_identifier_is_strict[A\\nB]": {
+      "priority": "supporting",
+      "rationale": "event identifier is strict；这补充验证外围业务约束，失败会降低交付完整性和可运维性。",
+      "weight": 0.013
+    },
+    "test_outputs.py::test_event_identifier_is_strict[A]": {
+      "priority": "supporting",
+      "rationale": "event identifier is strict；这补充验证外围业务约束，失败会降低交付完整性和可运维性。",
+      "weight": 0.013
+    },
+    "test_outputs.py::test_event_identifier_is_strict[trailing ]": {
+      "priority": "supporting",
+      "rationale": "event identifier is strict；这补充验证外围业务约束，失败会降低交付完整性和可运维性。",
+      "weight": 0.013
+    },
+    "test_outputs.py::test_full_occultation_zero_inner_duration_is_supported": {
+      "priority": "core",
+      "rationale": "full occultation zero inner duration is supported；这是任务的主交付路径，失败意味着核心业务结果不可用。",
+      "weight": 0.6
+    },
+    "test_outputs.py::test_inconsistent_sites_are_bad_geometry": {
+      "priority": "supporting",
+      "rationale": "inconsistent sites are bad geometry；这补充验证外围业务约束，失败会降低交付完整性和可运维性。",
+      "weight": 0.013
+    },
+    "test_outputs.py::test_nonpositive_radius_is_bad_geometry": {
+      "priority": "supporting",
+      "rationale": "body radius larger than star radius is bad geometry；这补充验证外围业务约束，失败会降低交付完整性和可运维性。",
+      "weight": 0.013
+    },
+    "test_outputs.py::test_repeat_run_is_byte_identical": {
+      "priority": "recovery",
+      "rationale": "repeat run is byte identical；这验证失败、重跑或恢复不变量，失败会造成旧数据和台账不一致。",
+      "weight": 0.031
+    },
+    "test_outputs.py::test_result_has_compact_fixed_order": {
+      "priority": "schema",
+      "rationale": "result has compact fixed order；这验证结构、类型或序列化外观，失败会使下游无法稳定消费结果。",
+      "weight": 0.018
+    },
+    "test_outputs.py::test_sites_have_exact_keys": {
+      "priority": "schema",
+      "rationale": "sites have exact keys；这验证结构、类型或序列化外观，失败会使下游无法稳定消费结果。",
+      "weight": 0.018
+    },
+    "test_outputs.py::test_sites_preserve_input_order": {
+      "priority": "recovery",
+      "rationale": "sites preserve input order；这验证失败、重跑或恢复不变量，失败会造成旧数据和台账不一致。",
+      "weight": 0.031
+    },
+    "test_outputs.py::test_top_level_keys_are_exact": {
+      "priority": "schema",
+      "rationale": "top level keys are exact；这验证结构、类型或序列化外观，失败会使下游无法稳定消费结果。",
+      "weight": 0.018
+    }
+  },
+  "weight_policy": {
+    "basis": "business_priority",
+    "core_min_share": 0.5,
+    "version": 1
+  }
+}
