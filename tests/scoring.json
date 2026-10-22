@@ -82,7 +82,12 @@
     "test_outputs.py::test_full_occultation_zero_inner_duration_is_supported": {
       "priority": "core",
       "rationale": "full occultation zero inner duration is supported；这是任务的主交付路径，失败意味着核心业务结果不可用。",
-      "weight": 0.6
+      "weight": 0.58
+    },
+    "test_outputs.py::test_event_identifier_bounds_are_inclusive": {
+      "priority": "boundary",
+      "rationale": "event identifier bounds are inclusive；这验证事件批号的合法端点与相邻越界，失败会误拒合法联络单或放行非法批号。",
+      "weight": 0.02
     },
     "test_outputs.py::test_inconsistent_sites_are_bad_geometry": {
       "priority": "supporting",

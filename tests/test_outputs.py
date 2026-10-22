@@ -79,7 +79,7 @@ def test_body_radius_is_inverted_from_inner_and_outer_contacts(tmp_path):
 
 
 def test_unordered_contacts_recover_unique_common_radius(tmp_path):
-    """题面：「先把每个台站无序的四个时刻恢复成唯一一组 `t1_s < t2_s <= t3_s < t4_s`。」"""
+    """题面：「先从每个台站排除两个噪声时刻，再把剩余四个无序时刻恢复成唯一一组 `t1_s < t2_s <= t3_s < t4_s`。所有台站恢复出的半径必须落在同一个 `1e-8` 相对容差簇内。只有一个台站也有多个子集/排列可落入该簇，或不同台站没有任何共同一致组合时，视为对应关系无法唯一恢复。」"""
     result, _, output = invoke(tmp_path, sample())
     document = read(output)
     assert result.returncode == 0
@@ -111,7 +111,7 @@ def test_center_time_uses_outer_contacts(tmp_path):
 
 
 def test_full_occultation_zero_inner_duration_is_supported(tmp_path):
-    """题面：「允许全掩，即 `t2_s == t3_s`。」"""
+    """题面：「恒星球心与天体边缘相交时发生外切。记恒星星半径为 `R`，掩食天体半径为 `r`，该站天空速度大小为 `v`。恢复出的正半径还必须满足 `r <= R`。外切到外切的半时长为 `a=(t4_s-t1_s)/2`，两次内切之间的半时长为 `c=(t3_s-t2_s)/2`，路径中心时刻为 `t0=(t1_s+t4_s)/2`。四接触满足：」"""
     payload = sample()
     payload["contacts"] = [
         contact("CENTRAL", 10.0, 0.0),
@@ -165,6 +165,26 @@ def test_event_identifier_is_strict(tmp_path, event_id):
     assert result.returncode == 1 and result.stderr == "运行拒收: BAD_INPUT\n" and not output.exists()
 
 
+def test_event_identifier_bounds_are_inclusive(tmp_path):
+    """题面：「批号 `event_id` 取 2 到 48 个可见字符，两端不能留空，控制字符也不可用。」"""
+    payload = sample()
+    # case_id: EVENT-ID-ACCEPT
+    payload["event_id"] = "A1"
+    shortest, _, shortest_output = invoke(tmp_path, payload, name="shortest")
+    payload["event_id"] = "A" * 48
+    longest, _, longest_output = invoke(tmp_path, payload, name="longest")
+    # case_id: EVENT-ID-REJECT
+    payload["event_id"] = "A"
+    too_short, _, missing_short = invoke(tmp_path, payload, name="too-short")
+    payload["event_id"] = "A" * 49
+    too_long, _, missing_long = invoke(tmp_path, payload, name="too-long")
+    assert shortest.returncode == 0 and shortest_output.is_file()
+    assert longest.returncode == 0 and longest_output.is_file()
+    assert too_short.returncode == 1 and too_short.stderr == "运行拒收: BAD_INPUT\n"
+    assert too_long.returncode == 1 and too_long.stderr == "运行拒收: BAD_INPUT\n"
+    assert not missing_short.exists() and not missing_long.exists()
+
+
 def test_duplicate_site_is_refused(tmp_path):
     """题面：「`site_id` 匹配 `[A-Z][A-Z0-9_-]{1,15}` 且不重复。」"""
     payload = sample()
@@ -175,7 +195,7 @@ def test_duplicate_site_is_refused(tmp_path):
 
 @pytest.mark.parametrize("times", [[10.0, 10.0, 11.0, 12.0, 13.0], [10.0] * 6])
 def test_contact_times_require_six_values_and_three_distinct(tmp_path, times):
-    """题面：「`contact_times_s` 恰好是六个有限数；其中恰好两个是录包噪声」。"""
+    """题面：「`site_id` 匹配 `[A-Z][A-Z0-9_-]{1,15}` 且不重复。`contact_times_s` 恰好是六个有限数。其中恰好两个是录包噪声，另外四个是真实内外接触，但录包程序没有保存接触编号。真实四时刻至少要有三个不同数值；允许全掩造成的中间两接触同刻。布尔值不算数字。」"""
     payload = sample()
     payload["contacts"][0]["contact_times_s"] = times
     result, _, output = invoke(tmp_path, payload)
@@ -191,7 +211,7 @@ def test_boolean_time_is_refused(tmp_path):
 
 
 def test_inconsistent_sites_are_bad_geometry(tmp_path):
-    """题面：「半径一致性以 `1e-8` 为容差边界。」"""
+    """题面：「多个台站给出的半径应当一致。以各站反演半径的中位数为最终半径；若任一站点与中位数的相对差超过 `1e-8`，说明四接触不自洽，不能用其中最好的一站掩盖问题。最终输出每站的 `b`，并用最终半径重新计算它。」"""
     payload = sample()
     site = payload["contacts"][1]
     site["contact_times_s"][0] -= 0.01
